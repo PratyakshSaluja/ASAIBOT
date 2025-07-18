@@ -89,11 +89,8 @@ class IntentClassifier:
     def __init__(self, llm: ChatOpenAI):
         self.llm = llm
         self.intent_prompt = PromptTemplate(
-            input_variables=["query", "conversation_history"],
-            template="""Classify the user's intent based on their message and conversation history.
-
-Conversation History:
-{conversation_history}
+            input_variables=["query"],
+            template="""Classify the user's intent based on their message.
 
 Current Message: {query}
 
@@ -104,7 +101,7 @@ Intent Categories:
 - size_inquiry: asking about sizes, dimensions
 - general_info: asking about company, ceramic benefits
 - negative_response: "no", "not interested", "not looking"
-- affirmative_response: "yes", "tell me more", "I want" - especially when responding to a previous question
+- affirmative_response: "yes", "tell me more", "I want"
 - conversation_history: asking about previous questions/conversation
 
 IMPORTANT: If the user says "yes", "tell me more", or similar affirmative responses, classify as "affirmative_response"
@@ -112,17 +109,16 @@ IMPORTANT: If the user says "yes", "tell me more", or similar affirmative respon
 Return ONLY the intent category (one word):"""
         )
         
-    def classify(self, query: str, conversation_history: List[Dict]) -> IntentType:
+    def classify(self, query: str) -> IntentType:
         try:
             # Fast rule-based classification first
-            quick_intent = self._quick_classify(query, conversation_history)
+            quick_intent = self._quick_classify(query)
             if quick_intent:
                 return quick_intent
             
             # Use LLM only if rule-based fails
-            history_text = self._format_history(conversation_history)
             response = self.llm.invoke(
-                self.intent_prompt.format(query=query, conversation_history=history_text)
+                self.intent_prompt.format(query=query)
             )
             intent_text = response.content.strip().lower()
             
@@ -142,7 +138,7 @@ Return ONLY the intent category (one word):"""
         except:
             return IntentType.GENERAL_INFO
     
-    def _quick_classify(self, query: str, conversation_history: List[Dict]) -> Optional[IntentType]:
+    def _quick_classify(self, query: str) -> Optional[IntentType]:
         """Fast rule-based classification to avoid LLM calls for obvious intents"""
         query_lower = query.lower().strip()
         
@@ -182,16 +178,6 @@ Return ONLY the intent category (one word):"""
             return IntentType.CONVERSATION_HISTORY
             
         return None
-    
-    def _format_history(self, history: List[Dict]) -> str:
-        if not history or len(history) <= 1:
-            return "No previous conversation"
-        
-        formatted = []
-        for msg in history[-3:]:  # Last 3 messages
-            role = "Customer" if msg.get('role') == 'user' else "Bot"
-            formatted.append(f"{role}: {msg.get('content', '')}")
-        return "\n".join(formatted)
 
 # --- 4. RESPONSE GENERATORS ---
 
@@ -203,17 +189,23 @@ class ResponseGenerator:
         
         # Different prompts for different intents
         self.greeting_prompt = PromptTemplate(
-            input_variables=["context"],
+            input_variables=["context", "conversation_history"],
             template="""You are ASAI-Bot. Give a brief, friendly greeting and ask how you can help with ceramic cookware needs.
-            
+
+Previous conversation:
+{conversation_history}
+
 Context: {context}
 
 Keep it to 1-2 sentences max. End with a question."""
         )
         
         self.cooking_prompt = PromptTemplate(
-            input_variables=["query", "context", "dish"],
+            input_variables=["query", "context", "dish", "conversation_history"],
             template="""You are ASAI-Bot. The customer wants to cook {dish}.
+
+Previous conversation:
+{conversation_history}
 
 Context from knowledge base:
 {context}
@@ -229,7 +221,7 @@ Keep response to 2-3 sentences. End with a relevant question about ASAI products
             input_variables=["context", "conversation_history"],
             template="""You are ASAI-Bot. The customer said "yes" or wants more information.
 
-Recent conversation:
+Previous conversation:
 {conversation_history}
 
 Context from knowledge base:
@@ -243,8 +235,11 @@ Keep response to 2-3 sentences."""
         )
         
         self.product_prompt = PromptTemplate(
-            input_variables=["query", "context"],
+            input_variables=["query", "context", "conversation_history"],
             template="""You are ASAI-Bot. Answer the customer's product question using ONLY the context below.
+
+Previous conversation:
+{conversation_history}
 
 Context from knowledge base:
 {context}
@@ -257,8 +252,11 @@ Be specific but concise (2-3 sentences). End with a follow-up question."""
         )
         
         self.size_prompt = PromptTemplate(
-            input_variables=["context"],
+            input_variables=["context", "conversation_history"],
             template="""You are ASAI-Bot. Explain ASAI's available sizes briefly.
+
+Previous conversation:
+{conversation_history}
 
 Context: {context}
 
@@ -267,8 +265,11 @@ Keep to 2-3 sentences. End with asking about their preference."""
         )
         
         self.general_prompt = PromptTemplate(
-            input_variables=["query", "context"],
+            input_variables=["query", "context", "conversation_history"],
             template="""You are ASAI-Bot. Answer using ONLY the context provided below.
+
+Previous conversation:
+{conversation_history}
 
 Context from knowledge base:
 {context}
@@ -284,7 +285,7 @@ Keep response to 2-3 sentences. Stay focused on ASAI ceramic cookware."""
             input_variables=["query", "conversation_history"],
             template="""You are ASAI-Bot. The customer is asking about their previous question or conversation.
 
-Recent conversation:
+Previous conversation:
 {conversation_history}
 
 Customer Query: {query}
@@ -297,35 +298,51 @@ Look at the conversation history and accurately tell them what their last questi
         relevant_docs = self.vector_store.similarity_search(query, k=2)
         doc_context = "\n".join([doc.page_content for doc in relevant_docs])
         
+        # Format conversation history
+        history_text = self._format_conversation_history(context.conversation_history)
+        
         if intent == IntentType.GREETING:
-            response = self.llm.invoke(self.greeting_prompt.format(context=doc_context))
+            response = self.llm.invoke(self.greeting_prompt.format(
+                context=doc_context, 
+                conversation_history=history_text
+            ))
         elif intent == IntentType.COOKING_NEED:
             # Extract dish from query
             dish = self._extract_dish(query)
             response = self.llm.invoke(self.cooking_prompt.format(
-                query=query, context=doc_context, dish=dish
+                query=query, 
+                context=doc_context, 
+                dish=dish,
+                conversation_history=history_text
             ))
         elif intent == IntentType.PRODUCT_QUESTION:
             response = self.llm.invoke(self.product_prompt.format(
-                query=query, context=doc_context
+                query=query, 
+                context=doc_context,
+                conversation_history=history_text
             ))
         elif intent == IntentType.SIZE_INQUIRY:
-            response = self.llm.invoke(self.size_prompt.format(context=doc_context))
+            response = self.llm.invoke(self.size_prompt.format(
+                context=doc_context,
+                conversation_history=history_text
+            ))
         elif intent == IntentType.CONVERSATION_HISTORY:
             # Handle conversation history queries
-            history_text = self._format_conversation_history(context.conversation_history)
             response = self.llm.invoke(self.conversation_history_prompt.format(
-                query=query, conversation_history=history_text
+                query=query, 
+                conversation_history=history_text
             ))
         elif intent == IntentType.AFFIRMATIVE_RESPONSE:
             # Handle "yes", "tell me more" responses with context
-            history_text = self._format_conversation_history(context.conversation_history)
             response = self.llm.invoke(self.affirmative_response_prompt.format(
-                context=doc_context, conversation_history=history_text
+                context=doc_context, 
+                conversation_history=history_text
             ))
         else:
             response = self.llm.invoke(self.general_prompt.format(
-                query=query, context=doc_context
+                query=query, 
+                context=doc_context,
+                conversation_history=history_text
             ))
         
         return response.content if hasattr(response, 'content') else str(response)
@@ -336,33 +353,49 @@ Look at the conversation history and accurately tell them what their last questi
         relevant_docs = self.vector_store.similarity_search(query, k=2)
         doc_context = "\n".join([doc.page_content for doc in relevant_docs])
         
+        # Format conversation history
+        history_text = self._format_conversation_history(context.conversation_history)
+        
         # Select appropriate prompt based on intent
         if intent == IntentType.GREETING:
-            prompt = self.greeting_prompt.format(context=doc_context)
+            prompt = self.greeting_prompt.format(
+                context=doc_context,
+                conversation_history=history_text
+            )
         elif intent == IntentType.COOKING_NEED:
             dish = self._extract_dish(query)
             prompt = self.cooking_prompt.format(
-                query=query, context=doc_context, dish=dish
+                query=query, 
+                context=doc_context, 
+                dish=dish,
+                conversation_history=history_text
             )
         elif intent == IntentType.PRODUCT_QUESTION:
             prompt = self.product_prompt.format(
-                query=query, context=doc_context
+                query=query, 
+                context=doc_context,
+                conversation_history=history_text
             )
         elif intent == IntentType.SIZE_INQUIRY:
-            prompt = self.size_prompt.format(context=doc_context)
+            prompt = self.size_prompt.format(
+                context=doc_context,
+                conversation_history=history_text
+            )
         elif intent == IntentType.CONVERSATION_HISTORY:
-            history_text = self._format_conversation_history(context.conversation_history)
             prompt = self.conversation_history_prompt.format(
-                query=query, conversation_history=history_text
+                query=query, 
+                conversation_history=history_text
             )
         elif intent == IntentType.AFFIRMATIVE_RESPONSE:
-            history_text = self._format_conversation_history(context.conversation_history)
             prompt = self.affirmative_response_prompt.format(
-                context=doc_context, conversation_history=history_text
+                context=doc_context, 
+                conversation_history=history_text
             )
         else:
             prompt = self.general_prompt.format(
-                query=query, context=doc_context
+                query=query, 
+                context=doc_context,
+                conversation_history=history_text
             )
         
         # Create streaming LLM
@@ -694,8 +727,8 @@ Customer Reviews:
     def process_message(self, query: str, conversation_history: List[Dict]) -> Dict[str, Any]:
         """Main method to process user message"""
         try:
-            # 1. Classify intent
-            intent = self.intent_classifier.classify(query, conversation_history)
+            # 1. Classify intent (no longer needs conversation history)
+            intent = self.intent_classifier.classify(query)
             
             # 2. Create conversation context
             context = ConversationContext(
@@ -732,8 +765,8 @@ Customer Reviews:
     def process_message_stream(self, query: str, conversation_history: List[Dict]):
         """Process message and return streaming response"""
         try:
-            # 1. Classify intent (now optimized with rule-based first)
-            intent = self.intent_classifier.classify(query, conversation_history)
+            # 1. Classify intent (no longer needs conversation history)
+            intent = self.intent_classifier.classify(query)
             
             # 2. Create conversation context
             context = ConversationContext(

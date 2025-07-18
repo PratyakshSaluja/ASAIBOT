@@ -180,8 +180,8 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# API URL (updated to use modular backend)
-API_URL = "http://127.0.0.1:5001"
+# API URL (updated to use Render deployment)
+API_URL = "https://asaibot.onrender.com"
 
 def format_reviews_html(reviews):
     """Format product reviews as HTML"""

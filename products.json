@@ -1,0 +1,196 @@
+{
+  "products": [
+    {
+      "id": "asai-ceramic-pan-8inch",
+      "name": "ASAI 8-Inch Ceramic Non-Stick Pan",
+      "size": "8 inch",
+      "category": "frying_pan",
+      "price": "$49.99",
+      "description": "Perfect for single servings, eggs, and small portions. Ideal for dosas, crepes, and omelets.",
+      "image_url": "https://asai.com/images/8inch-ceramic-pan.jpg",
+      "product_url": "https://asai.com/products/8inch-ceramic-pan",
+      "features": [
+        "100% ceramic non-stick coating",
+        "PFOA and PTFE free",
+        "Even heat distribution",
+        "Easy to clean",
+        "Oven safe up to 400°F"
+      ],
+      "best_for": ["dosas", "crepes", "eggs", "single_serving", "pancakes"],
+      "reviews": [
+        {
+          "rating": 5,
+          "author": "Sarah M.",
+          "text": "Perfect for making dosas! The ceramic coating works beautifully and cleanup is effortless.",
+          "verified": true
+        },
+        {
+          "rating": 4,
+          "author": "Mike R.",
+          "text": "Great size for breakfast. Heats evenly and the ceramic surface is amazing.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "asai-ceramic-pan-10inch",
+      "name": "ASAI 10-Inch Ceramic Non-Stick Pan",
+      "size": "10 inch",
+      "category": "frying_pan",
+      "price": "$69.99",
+      "description": "Our most popular size. Perfect for family cooking, stir-fries, and medium-sized meals.",
+      "image_url": "https://asai.com/images/10inch-ceramic-pan.jpg",
+      "product_url": "https://asai.com/products/10inch-ceramic-pan",
+      "features": [
+        "100% ceramic non-stick coating",
+        "PFOA and PTFE free",
+        "Even heat distribution",
+        "Ergonomic handle",
+        "Oven safe up to 400°F"
+      ],
+      "best_for": ["family_cooking", "stir_fry", "sauteing", "vegetables", "medium_meals"],
+      "reviews": [
+        {
+          "rating": 5,
+          "author": "Jennifer L.",
+          "text": "This pan has transformed my cooking! Everything slides off easily and it looks beautiful.",
+          "verified": true
+        },
+        {
+          "rating": 5,
+          "author": "David K.",
+          "text": "Best pan I've ever owned. The ceramic coating is incredible for healthy cooking.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "asai-ceramic-pan-12inch",
+      "name": "ASAI 12-Inch Ceramic Non-Stick Pan",
+      "size": "12 inch",
+      "category": "frying_pan",
+      "price": "$89.99",
+      "description": "Large family-sized pan perfect for big batches, large dosas, and entertaining.",
+      "image_url": "https://asai.com/images/12inch-ceramic-pan.jpg",
+      "product_url": "https://asai.com/products/12inch-ceramic-pan",
+      "features": [
+        "100% ceramic non-stick coating",
+        "PFOA and PTFE free",
+        "Superior heat retention",
+        "Extra-wide cooking surface",
+        "Oven safe up to 400°F"
+      ],
+      "best_for": ["large_dosas", "big_batches", "entertaining", "large_families", "meal_prep"],
+      "reviews": [
+        {
+          "rating": 5,
+          "author": "Priya S.",
+          "text": "Amazing for making large dosas! The ceramic surface is perfect and cleanup is so easy.",
+          "verified": true
+        },
+        {
+          "rating": 4,
+          "author": "Robert T.",
+          "text": "Great for cooking for the whole family. The size is perfect and quality is excellent.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "asai-ceramic-wok-14inch",
+      "name": "ASAI 14-Inch Ceramic Non-Stick Wok",
+      "size": "14 inch",
+      "category": "wok",
+      "price": "$109.99",
+      "description": "Traditional wok shape with modern ceramic coating. Perfect for stir-fries and Asian cooking.",
+      "image_url": "https://asai.com/images/14inch-ceramic-wok.jpg",
+      "product_url": "https://asai.com/products/14inch-ceramic-wok",
+      "features": [
+        "100% ceramic non-stick coating",
+        "Traditional wok shape",
+        "High heat cooking capability",
+        "Ergonomic wooden handle",
+        "Oven safe up to 450°F"
+      ],
+      "best_for": ["stir_fry", "asian_cooking", "high_heat", "vegetables", "wok_cooking"],
+      "reviews": [
+        {
+          "rating": 5,
+          "author": "Linda C.",
+          "text": "Perfect wok! The ceramic coating handles high heat beautifully. Stir-fries come out perfect.",
+          "verified": true
+        },
+        {
+          "rating": 5,
+          "author": "Tony H.",
+          "text": "Love this wok! Traditional shape with modern ceramic technology. Highly recommend.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "asai-ceramic-saucepan-2qt",
+      "name": "ASAI 2-Quart Ceramic Non-Stick Saucepan",
+      "size": "2 quart",
+      "category": "saucepan",
+      "price": "$59.99",
+      "description": "Perfect for sauces, gravies, and small batches. The ceramic coating prevents sticking and burning.",
+      "image_url": "https://asai.com/images/2qt-ceramic-saucepan.jpg",
+      "product_url": "https://asai.com/products/2qt-ceramic-saucepan",
+      "features": [
+        "100% ceramic non-stick coating",
+        "Perfect for sauces",
+        "Easy pour spout",
+        "Heat-resistant handle",
+        "Oven safe up to 400°F"
+      ],
+      "best_for": ["sauces", "gravies", "small_batches", "heating", "melting"],
+      "reviews": [
+        {
+          "rating": 4,
+          "author": "Maria G.",
+          "text": "Great for making sauces. Nothing sticks and it's so easy to clean.",
+          "verified": true
+        },
+        {
+          "rating": 5,
+          "author": "James P.",
+          "text": "Perfect size for small batches. The ceramic coating is fantastic.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "asai-ceramic-set-3piece",
+      "name": "ASAI 3-Piece Ceramic Cookware Set",
+      "size": "Set (8\", 10\", 12\")",
+      "category": "cookware_set",
+      "price": "$179.99",
+      "description": "Complete starter set with our most popular sizes. Perfect for any kitchen.",
+      "image_url": "https://asai.com/images/3piece-ceramic-set.jpg",
+      "product_url": "https://asai.com/products/3piece-ceramic-set",
+      "features": [
+        "100% ceramic non-stick coating",
+        "Three most popular sizes",
+        "Matching design",
+        "Space-saving storage",
+        "Oven safe up to 400°F"
+      ],
+      "best_for": ["complete_kitchen", "starter_set", "gift", "versatile_cooking", "all_purposes"],
+      "reviews": [
+        {
+          "rating": 5,
+          "author": "Kelly W.",
+          "text": "Perfect set for any kitchen! All three sizes are useful and the quality is outstanding.",
+          "verified": true
+        },
+        {
+          "rating": 5,
+          "author": "Steven L.",
+          "text": "Best investment for my kitchen. These pans do everything I need.",
+          "verified": true
+        }
+      ]
+    }
+  ]
+}
